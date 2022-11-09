@@ -77,78 +77,123 @@ class Tweets(BMW):
 
 #Path Operactions
 
-## Home
-@app.get(
-    path="/"
-    )
-def home():
-    return {"Twitter API" : "All the proccess are working" }
-
 ## Troll
 @app.post(
-    path="/F"
+    path="/F",
+    tags=["Troll"]
     )
-def home():
+def troll():
     return "Me está llevando el diablo, send help"
 
 ## Users
-
-app.post(
+@app.post(
     path="/signup",
     response_model= User,
     status_code= status.HTTP_201_CREATED,
     summary="Register a new User",
-    tags="User",
+    tags=["User"],
 )
 def signup():
     pass
 
-app.post(
+@app.post(
     path="/login",
     response_model= User,
     status_code= status.HTTP_200_OK,
     summary="Login a user",
-    tags="User",
+    tags=["User"],
 )
 def login():
     pass
 
-app.get(
+@app.get(
     path="/users",
     response_model= List[User],
     status_code= status.HTTP_200_OK,
     summary="Show all the users",
-    tags="User",
+    tags=["User"],
 )
 def show_all_users():
     pass
 
-app.get(
+@app.get(
     path="/users/{user_id}",
     response_model= User,
     status_code= status.HTTP_200_OK,
     summary="Show a User",
-    tags="User",
+    tags=["User"],
 )
 def show_a_user():
     pass
 
-app.delete(
+@app.delete(
     path="/user/{user_id}/delete",
     response_model= User,
     status_code= status.HTTP_200_OK,
     summary="Delete a user",
-    tags="User",
+    tags=["User"],
 )
-def delete():
+def delete_user():
     pass
 
-app.put(
+@app.put(
     path="/user/{user_id}/update",
     response_model= User,
     status_code= status.HTTP_200_OK,
     summary="Update a user",
-    tags="User",
+    tags=["User"],
 )
-def update():
+def update_user():
+    pass
+
+## Home
+@app.get(
+    path="/",
+    response_model= List[Tweets],
+    status_code= status.HTTP_200_OK,
+    summary="Show all the tweets",
+    tags=["Tweets"],
+)
+def home():
+    return {"Twitter API" : "All the proccess are working" }
+
+## Tweets
+@app.get(
+    path="/post",
+    response_model= Tweets,
+    status_code= status.HTTP_201_CREATED,
+    summary="Created a new tweet",
+    tags=["Tweets"],
+)
+def signup():
+    pass
+
+@app.get(
+    path="/tweets/{tweet_id}",
+    response_model= Tweets,
+    status_code= status.HTTP_200_OK,
+    summary="Show a tweet",
+    tags=["Tweets"],
+)
+def show_a_tweet():
+    pass
+
+@app.delete(
+    path="/tweets/{tweet_id}/delete",
+    response_model= Tweets,
+    status_code= status.HTTP_200_OK,
+    summary="Delete a tweet",
+    tags=["Tweets"],
+)
+def delete_tweet():
+    pass
+
+@app.put(
+    path="/tweets/{tweet_id}/update",
+    response_model= Tweets,
+    status_code= status.HTTP_200_OK,
+    summary="Update a tweet",
+    tags=["Tweets"],
+)
+def update_tweet():
     pass
