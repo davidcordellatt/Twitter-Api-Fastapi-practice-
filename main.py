@@ -1,6 +1,7 @@
 #Python imports
 from uuid       import UUID
 from datetime   import date
+from datetime   import datetime
 from typing     import Optional
 #Pydantic imports
 from pydantic import Field as FD
@@ -53,11 +54,25 @@ class User(UserBase):
 
     birth_date: Optional[date] = FD(default=None)
 
-
-
 class Tweets(BMW):
-    pass
+    
+    tweet_id : UUID = FD(
+        ...,
+    )
 
+    content: str = FD(
+        ...,
+        min_length=1,
+        max_length=256,
+        example="Hello dear. This is the first tweet from my Api"
+    )
+
+    created_at: date = FD(default=datetime.now())
+    update_at: Optional[date] = FD(default=None)
+
+    by : User = FD(
+        ...,
+    )
 
 
 @app.get(
@@ -65,3 +80,9 @@ class Tweets(BMW):
     )
 def home():
     return {"Twitter API" : "All the proccess are working" }
+
+@app.post(
+    path="/F"
+    )
+def home():
+    return "Me está llevando el diablo, send help"
