@@ -1,8 +1,10 @@
 #Python imports
+import json
 from uuid       import UUID
 from datetime   import date
 from datetime   import datetime
 from typing     import Optional, List
+
 
 #Pydantic imports
 from pydantic import Field as FD
@@ -12,6 +14,7 @@ from pydantic import EmailStr
 #FastAPI imports
 from fastapi import FastAPI
 from fastapi import status
+from fastapi import Body
 
 #This is the app
 app = FastAPI()
@@ -55,6 +58,14 @@ class User(UserBase):
 
     birth_date: Optional[date] = FD(default=None)
 
+class UserRegister(User):
+
+    password: str = FD(
+        ...,
+        min_length=8,
+        max_length=22,
+        example="perejil0000**"    
+    )
 class Tweets(BMW):
     
     tweet_id : UUID = FD(
@@ -93,8 +104,33 @@ def troll():
     summary="Register a new User",
     tags=["User"],
 )
-def signup():
-    pass
+def signup(user: UserRegister = Body(...)):
+    """
+    Sign-Up
+
+    Register a user in the app
+    
+    Parameters:
+        - Request body parameter
+            - user: UserRegister
+    
+    Returns a Json whith the basice user information:
+
+        - user id : UUID
+        - email : Emailstr
+        - first name: str
+        - last name: str
+        - birth date: datetime
+    """
+    with open("user.json", "r+", encoding="utf-8") as user_data:
+        results = json.loads(user_data.read())
+        user_dict = user.dict()
+        user_dict["user_id"] = str(user_dict["user_id"])
+        user_dict["birth_date"] = str(user_dict["birth_date"])
+        results.append(user_dict)
+        user_data.seek(0)
+        user_data.write(json.dumps(results))
+        return user
 
 @app.post(
     path="/login",
@@ -104,7 +140,23 @@ def signup():
     tags=["User"],
 )
 def login():
-    pass
+    """
+    Login
+
+    Login a user in the app
+    
+    Parameters:
+        - Request body parameter
+            - user: UserRegister
+    
+    Returns a Json whith the basice user information:
+
+        - user id : UUID
+        - email : Emailstr
+        - first name: str
+        - last name: str
+        - birth date: str 
+    """
 
 @app.get(
     path="/users",
@@ -114,7 +166,26 @@ def login():
     tags=["User"],
 )
 def show_all_users():
-    pass
+    """
+    Show all users
+
+    In this page you can see all the users in the app
+    
+    Parameters:
+        - Request body parameter:
+        - user: UserRegister
+    
+    Returns a Json whith the basics users information:
+
+        - user id : UUID
+        - email : Emailstr
+        - first name: str
+        - last name: str
+        - birth date: datetime
+    """
+    with open("user.json", "r", encoding="utf-8") as user_data:
+        results = json.loads(user_data.read())
+        return results
 
 @app.get(
     path="/users/{user_id}",
