@@ -22,5 +22,13 @@
         "last_name": "Zalm\u00f3n",
         "birth_date": "2005-06-09",
         "password": "oregano0908#$"
+    },
+    {
+        "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "email": "micorreo@correo.com",
+        "first_name": "Ximane",
+        "last_name": "Lolis",
+        "birth_date": "2000-11-09",
+        "password": "manguera0000**"
     }
 ]

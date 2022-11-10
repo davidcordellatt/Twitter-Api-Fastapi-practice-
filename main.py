@@ -5,7 +5,6 @@ from datetime   import date
 from datetime   import datetime
 from typing     import Optional, List
 
-
 #Pydantic imports
 from pydantic import Field as FD
 from pydantic import BaseModel as BMW
@@ -37,7 +36,7 @@ class UserLogin(UserBase):
         ...,
         min_length=8,
         max_length=22,
-        example="perejil0000**"    
+        example="perejil0000**"  ,  
     )
 
 class User(UserBase):
@@ -66,7 +65,8 @@ class UserRegister(User):
         max_length=22,
         example="perejil0000**"    
     )
-class Tweets(BMW):
+
+class Tweet(BMW):
     
     tweet_id : UUID = FD(
         ...,
@@ -79,14 +79,9 @@ class Tweets(BMW):
         example="Hello dear. This is the first tweet from my Api"
     )
 
-    created_at: date = FD(default=datetime.now())
-    update_at: Optional[date] = FD(default=None)
-
-    by : User = FD(
-        ...,
-    )
-
-#Path Operactions
+    created_at: datetime = FD(default=datetime.now())
+    updated_at: Optional[datetime] = FD(default=None)
+    by: UserBase = FD (...)
 
 ## Troll
 @app.post(
@@ -140,23 +135,7 @@ def signup(user: UserRegister = Body(...)):
     tags=["User"],
 )
 def login():
-    """
-    Login
-
-    Login a user in the app
-    
-    Parameters:
-        - Request body parameter
-            - user: UserRegister
-    
-    Returns a Json whith the basice user information:
-
-        - user id : UUID
-        - email : Emailstr
-        - first name: str
-        - last name: str
-        - birth date: str 
-    """
+    pass
 
 @app.get(
     path="/users",
@@ -216,32 +195,53 @@ def delete_user():
 )
 def update_user():
     pass
-
-## Home
-@app.get(
-    path="/",
-    response_model= List[Tweets],
-    status_code= status.HTTP_200_OK,
-    summary="Show all the tweets",
-    tags=["Tweets"],
-)
-def home():
-    return {"Twitter API" : "All the proccess are working" }
+#Path Operactions
 
 ## Tweets
-@app.get(
+@app.post(
     path="/post",
-    response_model= Tweets,
-    status_code= status.HTTP_201_CREATED,
-    summary="Created a new tweet",
-    tags=["Tweets"],
+    response_model=Tweet,
+    status_code=status.HTTP_201_CREATED,
+    summary="Post a tweet",
+    tags=["Tweets"]
 )
-def signup():
-    pass
+def post_a_tweet(tweet : Tweet = Body(...)):
+    """
+    Post a Tweet
+
+    In this page you can create a new tweet
+    
+    Parameters:
+    - Request body parameter:
+        - tweet: Tweets
+    
+    Returns a Json whith the basics users information:
+
+    - tweet:id : UUID
+    - content : str
+    - created : datetime
+    - updated : Optional[datetime]
+    - by: UserBase
+    """
+
+    with open("tweets.json", "r+", encoding="utf-8") as tweet_data:
+        results = json.loads(tweet_data.read())
+        tweet_dict = tweet.dict()
+        tweet_dict["tweet_id"] = str(tweet_dict["tweet_id"])
+        tweet_dict["created_at"] = str(tweet_dict["created_at"])
+        if tweet_dict["updated_at"] is not None:
+            tweet_dict["updated_at"] = str(tweet_dict["updated_at"])
+
+        tweet_dict["by"]["user_id"] = str(tweet_dict["by"]["user_id"])
+        tweet_dict["by"]["email"] = str(tweet_dict["by"]["email"])        
+        results.append(tweet_dict)
+        tweet_data.seek(0)
+        tweet_data.write(json.dumps(results))
+        return tweet
 
 @app.get(
     path="/tweets/{tweet_id}",
-    response_model= Tweets,
+    response_model= Tweet,
     status_code= status.HTTP_200_OK,
     summary="Show a tweet",
     tags=["Tweets"],
@@ -251,7 +251,7 @@ def show_a_tweet():
 
 @app.delete(
     path="/tweets/{tweet_id}/delete",
-    response_model= Tweets,
+    response_model= Tweet,
     status_code= status.HTTP_200_OK,
     summary="Delete a tweet",
     tags=["Tweets"],
@@ -261,10 +261,21 @@ def delete_tweet():
 
 @app.put(
     path="/tweets/{tweet_id}/update",
-    response_model= Tweets,
+    response_model= Tweet,
     status_code= status.HTTP_200_OK,
     summary="Update a tweet",
     tags=["Tweets"],
 )
 def update_tweet():
     pass
+
+## Home
+@app.get(
+    path="/",
+    response_model= List[Tweet],
+    status_code= status.HTTP_200_OK,
+    summary="Show all the tweets",
+    tags=["Home"],
+)
+def home():
+    return {"Twitter API" : "All the proccess are working" }
