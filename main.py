@@ -278,4 +278,22 @@ def update_tweet():
     tags=["Home"],
 )
 def home():
-    return {"Twitter API" : "All the proccess are working" }
+    """
+    Show all tweets
+
+    In this page you can see all the tweers in the app
+    
+    Parameters:
+        -
+
+    Returns a Json whith the basics users information:
+
+    - tweet:id : UUID
+    - content : str
+    - created : datetime
+    - updated : Optional[datetime]
+    - by: UserBase
+    """
+    with open("tweets.json", "r", encoding="utf-8") as tweets_data:
+        results = json.loads(tweets_data.read())
+        return results
